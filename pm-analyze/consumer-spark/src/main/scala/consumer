@@ -1,0 +1,68 @@
+
+import org.apache.spark.SparkConf
+import org.apache.spark.storage.StorageLevel
+import org.apache.spark.streaming._
+import org.apache.spark.streaming.kafka.KafkaUtils
+
+object Consumer {
+  def main(args: Array[String]) {
+    //mvn clean scala:compile compile package
+    val conf = new SparkConf().setMaster("spark://master:").setAppName("UserClickCountStat")
+    val ssc = new StreamingContext(conf, Duration(1000))
+    val kafkaStream = {
+
+
+      val sparkStreamingConsumerGroup = "spark-streaming-consumer-group"
+      val kafkaParams = Map(
+        "zookeeper.connect" -> "zookeeper1:2181",
+        "group.id" -> "spark-streaming-test",
+        "zookeeper.connection.timeout.ms" -> "1000")
+      val inputTopic = "microMsg"
+      val numPartitionsOfInputTopic = 5
+      val streams = (1 to numPartitionsOfInputTopic) map { _ =>
+        KafkaUtils.createStream(ssc, kafkaParams, Map(inputTopic -> 1), StorageLevel.MEMORY_ONLY_SER).map(_._2)
+      }
+      val unifiedStream = ssc.union(streams)
+      val sparkProcessingParallelism = 1
+      unifiedStream.repartition(sparkProcessingParallelism)
+    }
+
+
+    val numInputMessages = ssc.sparkContext.accumulator(0L, "Kafka messages consumed")
+    val numOutputMessages = ssc.sparkContext.accumulator(0L, "Kafka messages produced")
+
+    val producerPool = {
+      val pool = createKafkaProducerPool(kafkaZkCluster.kafka.brokerList, outputTopic.name)
+      ssc.sparkContext.broadcast(pool)
+    }
+    // We also use a broadcast variable for our Avro Injection (Twitter Bijection)
+    val converter = ssc.sparkContext.broadcast(SpecificAvroCodecs.toBinary[Tweet])
+
+    // Define the actual data flow of the streaming job
+    kafkaStream.map { case bytes =>
+      numInputMessages += 1
+      // Convert Avro binary data to pojo
+      converter.value.invert(bytes) match {
+        case Success(tweet) => tweet
+        case Failure(e) => // ignore if the conversion failed
+      }
+    }.foreachRDD(rdd => {
+      rdd.foreachPartition(partitionOfRecords => {
+        val p = producerPool.value.borrowObject()
+        partitionOfRecords.foreach { case tweet: Tweet =>
+          // Convert pojo back into Avro binary format
+          val bytes = converter.value.apply(tweet)
+          // Send the bytes to Kafka
+          p.send(bytes)
+          numOutputMessages += 1
+        }
+        producerPool.value.returnObject(p)
+      })
+    })
+
+    // Run the streaming job
+    ssc.start()
+    ssc.awaitTermination()
+    println("hello world scala!")
+  }
+}
