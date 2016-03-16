@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <groupId>com.weibo-analyze.consumer-spark</groupId>
-    <artifactId>consumer-spark</artifactId>
+    <groupId>com.weibo-analyze.consumer-hdfs</groupId>
+    <artifactId>consumer-hdfs</artifactId>
 
     <dependencies>
 

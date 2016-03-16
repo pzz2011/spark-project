@@ -6,7 +6,6 @@ import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.dstream.DStream.toPairDStreamFunctions
 
-
 object Consumer {
 
   val TOPIC: String = "WeiBo"
@@ -21,7 +20,7 @@ object Consumer {
         "metadata.broker.list" -> "manager1:9091,master2:9092",
         "serializer.class" -> "kafka.serializer.StringEncoder",
         "zookeeper.connect" -> "worker1:2181,worker2:2181,worker3:2181",
-        "group.id" -> "spark-streaming-WeiBo",
+        "group.id" -> "weiBo-spark-streaming",
         "zookeeper.connection.timeout.ms" -> "1000")
       val inputTopic = TOPIC
       val numPartitionsOfInputTopic = 4

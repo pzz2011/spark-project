@@ -46,11 +46,21 @@ public final class Producer {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         // 配置key的序列化类
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        //request.required.acks
+        // 请求重试次数
+//        props.put("retries", 0);
+        // 批大小
+//        props.put("batch.size", 16384);
+        // 事务延时
+//        props.put("linger.ms", 1);
+        // 缓存区大小
+//        props.put("buffer.memory", 33554432);
         //0, which means that the producer never waits for an acknowledgement from the broker (the same behavior as 0.7). This option provides the lowest latency but the weakest durability guarantees (some data will be lost when a server fails).
         //1, which means that the producer gets an acknowledgement after the leader replica has received the data. This option provides better durability as the client waits until the server acknowledges the request as successful (only messages that were written to the now-dead leader but not yet replicated will be lost).
         //-1, which means that the producer gets an acknowledgement after all in-sync replicas have received the data. This option provides the best durability, we guarantee that no messages will be lost as long as at least one in sync replica remains.
-        props.put("acks", "-1");
+        // The "all" setting we have specified will result in blocking on the full commit of the record, the slowest but most durable setting.
+        props.put("acks", "all");
+
+
 
         return new KafkaProducer(props);
     }
