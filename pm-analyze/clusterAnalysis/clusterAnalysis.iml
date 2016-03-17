@@ -8,12 +8,10 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/scala" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/../ClusterAnalysis/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="scala-sdk-2.10.6" level="application" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.10.6" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-compiler:2.10.6" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.10.6" level="project" />
@@ -186,5 +184,6 @@
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.collections:google-collections:1.0" level="project" />
+    <orderEntry type="library" name="scala-sdk-2.10.6" level="application" />
   </component>
 </module>
